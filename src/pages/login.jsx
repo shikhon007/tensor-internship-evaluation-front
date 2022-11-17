@@ -2,7 +2,7 @@ import React from 'react'
 import Input from '@components/input/Input'
 import Joi from 'joi-browser'
 import axios from 'axios'
-import { setErrors, setRegistration } from '@components/registration/registrationSlice'
+import { setErrors, setValue } from '@components/registration/registrationSlice'
 import useForm from '@components/form/useForm'
 import { useDispatch, useSelector } from 'react-redux'
 import { useRouter } from 'next/router'
@@ -26,9 +26,8 @@ const Login = () => {
   }
 
   // set onchange data
-  const setRegistrationData = (data, inputName) => {
-    let newdata = { ...data, inputName }
-    dispatch(setRegistration(newdata))
+  const setRegistrationData = (data) => {
+    dispatch(setValue(data))
   }
 
   // set error data
@@ -43,11 +42,14 @@ const Login = () => {
       password,
     }
     try {
-      await axios.post('http://localhost:3030/api/v1/register/login', login)
+      const { data } = await axios.post('http://localhost:3030/api/v1/register/login', login)
+      console.log(data.data.accessToken)
+      const token = data.data.accessToken
+      console.log('login token', token)
+      sessionStorage.setItem('token', token)
       router.push('/alluser')
     } catch (err) {
-      console.log(err.response)
-      console.error(err.message)
+      dispatch(setErrors({ ...errors, username: 'Invalid Credential' }))
     }
   }
 
@@ -64,7 +66,7 @@ const Login = () => {
   return (
     <div className="flex flex-col items-center justify-center mt-10">
       <h3 className="text-2xl mb-5 text-sky-300">Login Form</h3>
-      <form className="flex flex-col items-center justify-center shadow-md shadow-slate-300 w-[400px] h-[450px] border-t-8 border-sky-200">
+      <form className="flex flex-col items-center justify-center shadow-md shadow-slate-300 w-[500px] h-[450px] border-t-8 border-sky-200">
         <Input
           type="text"
           onChange={handleChange}
@@ -85,7 +87,7 @@ const Login = () => {
         />
         <button
           onClick={handleSubmit}
-          className="w-[300px] bg-sky-300 mt-4 text-white capitalize p-2 rounded-md hover:bg-sky-500"
+          className="w-[400px] bg-sky-300 mt-4 text-white capitalize p-2 rounded-md hover:bg-sky-500"
         >
           login
         </button>

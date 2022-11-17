@@ -1,9 +1,10 @@
 import Joi from 'joi-browser'
-import { handleNextStep, setErrors, setRegistration } from '@components/registration/registrationSlice'
+import { handleNextStep, setErrors, setValue } from '@components/registration/registrationSlice'
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import useForm from '@components/form/useForm'
 import Input from '@components/input/Input'
+import axios from 'axios'
 
 const StepOne = () => {
   const registration = useSelector((state) => state.registration)
@@ -25,9 +26,9 @@ const StepOne = () => {
   }
 
   // set onchange data
-  const setRegistrationData = (data, inputName) => {
-    let newdata = { ...data, inputName }
-    dispatch(setRegistration(newdata))
+  const setRegistrationData = (data) => {
+    // let newdata = { ...data, inputName }
+    dispatch(setValue(data))
   }
 
   // set error data
@@ -37,7 +38,16 @@ const StepOne = () => {
 
   // submit form data
   const doSubmit = async () => {
-    dispatch(handleNextStep())
+    const checkCompanyName = {
+      companyName: companyName,
+    }
+    try {
+      const { data } = await axios.post('http://localhost:3030/api/v1/register/duplicate', checkCompanyName)
+      if (data.data == null) dispatch(handleNextStep())
+      else dispatch(setErrors({ ...errors, companyName: 'Company Name AllReady Exist' }))
+    } catch (error) {
+      console.error(error.message)
+    }
   }
 
   const { handleChange, handleSubmit } = useForm(
@@ -55,7 +65,7 @@ const StepOne = () => {
       <h3 className="text-2xl mb-5 text-sky-500">Registration Form</h3>
       <form
         onSubmit={(e) => e.preventDefault()}
-        className="flex flex-col items-center justify-center shadow-md shadow-slate-300 w-[400px] h-full border-t-4 mb-10 border-sky-300"
+        className="flex flex-col items-center justify-center shadow-md shadow-slate-300 w-[550px] h-full border-t-4 mb-10 border-sky-300"
       >
         <Input
           type="text"

@@ -5,15 +5,20 @@ import Link from 'next/link'
 import { useDispatch, useSelector } from 'react-redux'
 
 const alluser = () => {
-  const [allUser, setAllUser] = useState([])
-
   const registration = useSelector((state) => state.registration)
   const dispatch = useDispatch()
 
   const getData = async () => {
+    const token = localStorage.getItem('token')
+    console.log('token', token)
+    const config = {
+      header: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
     try {
       const { data } = await axios.get('http://localhost:3030/api/v1/register')
-      setAllUser(data.data)
+      //setAllUser(data.data)
       dispatch(allData(data.data))
     } catch (error) {
       console.log(error.message)
@@ -71,8 +76,8 @@ const alluser = () => {
               <td className="py-4 px-6">{user.contact}</td>
               <td className="py-4 px-6">{user.postalCode}</td>
               <td className="py-4 px-6">
-                <Link href="/edit">
-                  <button className="bg-red-300 p-2 w-[50px] text-white">Edit</button>
+                <Link href={`/update/${user.id}`}>
+                  <button className="bg-blue-300 py-2 w-[70px] text-white hover:bg-blue-500 rounded-md">Edit</button>
                 </Link>
               </td>
             </tr>

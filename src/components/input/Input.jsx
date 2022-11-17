@@ -11,7 +11,7 @@ const Input = ({ name, label, type, onChange, value, placeholder, error, isRequi
         value={value}
         placeholder={placeholder}
         name={name}
-        className="rounded py-2 px-4 w-[300px] justify-center border-b-2 border-sky-500"
+        className="rounded py-2 px-4 w-[450px] justify-center border-b-2 border-sky-500"
       />
       {error && <p className=" text-red-500 text-xs mt-2">**{error}**</p>}
     </div>

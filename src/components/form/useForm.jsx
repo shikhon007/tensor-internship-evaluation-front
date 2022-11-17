@@ -40,7 +40,7 @@ const useForm = (schema, checkSchema, formData, setFormData, errors, setErrors, 
     }
     let Data = { ...formData }
     Data[input.name] = input.value
-    setFormData(Data, input.name)
+    setFormData(Data)
     setErrors(errorData)
   }
   return { handleChange, handleSubmit }

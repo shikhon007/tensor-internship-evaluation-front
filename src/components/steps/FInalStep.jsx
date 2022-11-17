@@ -1,5 +1,5 @@
 import Joi from 'joi-browser'
-import { handlePrevStep, setErrors, setRegistration } from '@components/registration/registrationSlice'
+import { handlePrevStep, setErrors, setValue } from '@components/registration/registrationSlice'
 import React from 'react'
 import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux'
@@ -50,9 +50,8 @@ const FinalStep = () => {
   }
 
   // set onchange data
-  const setRegistrationData = (data, inputName) => {
-    let newdata = { ...data, inputName }
-    dispatch(setRegistration(newdata))
+  const setRegistrationData = (data) => {
+    dispatch(setValue(data))
   }
 
   // set error data
@@ -62,7 +61,15 @@ const FinalStep = () => {
 
   // submit form data
   const doSubmit = async () => {
-    console.log('hello')
+    const checkCompanyName = {
+      companyName: companyName,
+    }
+    const checkEmail = {
+      email: email,
+    }
+    const checkMobile = {
+      mobile: mobile,
+    }
     const newUser = {
       companyName,
       representativeName,
@@ -76,6 +83,14 @@ const FinalStep = () => {
     }
 
     try {
+      const res1 = await axios.post('http://localhost:3030/api/v1/register/duplicate', checkCompanyName)
+      if (res1.data.data !== null) return dispatch(setErrors({ ...errors, companyName: 'Company Name AllReady Exist' }))
+      const res2 = await axios.post('http://localhost:3030/api/v1/register/duplicate', checkEmail)
+      if (res2.data.data !== null) return dispatch(setErrors({ ...errors, email: 'This Email AllReady Exist' }))
+      const res3 = await axios.post('http://localhost:3030/api/v1/register/duplicate', checkMobile)
+      if (res3.data.data !== null)
+        return dispatch(setErrors({ ...errors, mobile: 'This Mobile Number AllReady Exist' }))
+
       await axios.post('http://localhost:3030/api/v1/register', newUser)
       router.push('/home')
     } catch (err) {
@@ -98,7 +113,7 @@ const FinalStep = () => {
       <h3 className="text-2xl mb-5 text-sky-500">Registration Form</h3>
       <form
         onSubmit={(e) => e.preventDefault()}
-        className="flex flex-col items-center justify-center shadow-md shadow-slate-300 w-[400px] h-full border-t-4 mb-10 border-sky-300"
+        className="flex flex-col items-center justify-center shadow-md shadow-slate-300 w-[550px] h-full border-t-4 mb-10 border-sky-300"
       >
         <Input
           type="text"
